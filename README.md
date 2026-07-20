@@ -1,3 +1,76 @@
+```mermaid
+flowchart TD
+    subgraph Smartphone ["USER'S SMARTPHONE"]
+        direction TB
+        
+        subgraph App ["AURA ANDROID APP"]
+            subgraph UI ["UI LAYER (Jetpack Compose)"]
+                ScanScreen
+                ConnectedScreen
+                BoschScreen
+                MediaScreen
+                
+                ScanScreen <-->|NavGraph| ConnectedScreen
+                ConnectedScreen --> BoschScreen
+                ConnectedScreen --> MediaScreen
+            end
+            
+            subgraph ViewModel ["VIEWMODEL LAYER (Hilt)"]
+                ControlViewModel
+                ScanViewModel
+                MediaViewModel
+            end
+            
+            subgraph Data ["DATA LAYER (@Singleton)"]
+                HeadUnitGattManager
+                BluetoothScanManager
+                BluetoothSPPManager
+                IdentificationEngine
+                UserVolumePreferences
+                LocalMediaRepository
+                ModuleRegistry
+                MediaSessionController
+            end
+            
+            subgraph Services ["ANDROID SERVICES (Foreground)"]
+                BluetoothConnectionService
+                SmartPlayPlayerSvc
+            end
+            
+            UI --> ViewModel
+            ViewModel --> Data
+            Data --> Services
+        end
+    end
+    
+    subgraph Bluetooth ["Android Bluetooth Stack"]
+        BLE["BLE GATT (Volume control)"]
+        BTClassic["BT Classic (AVRCP / A2DP / SPP)"]
+    end
+    
+    App --> Bluetooth
+    
+    subgraph HeadUnit ["BOSCH HEAD UNIT (In-Car)"]
+        subgraph GATTServer ["BLE GATT Server"]
+            HandshakeSvc["Handshake Svc"]
+            VolumeRW["Volume R/W Char"]
+            CCCD["CCCD (notify)"]
+        end
+        subgraph BTClassicHU ["BT Classic"]
+            A2DP["A2DP (audio)"]
+            AVRCP["AVRCP (media)"]
+            SPP["SPP (telemetry)"]
+        end
+    end
+    
+    BLE --> GATTServer
+    BTClassic --> BTClassicHU
+```
+
+
+
+
+
 ## Getting started
 * Fork this repository (Click the Fork button in the top right of this page, click your Profile Image)
 * Clone your fork down to your local machine
